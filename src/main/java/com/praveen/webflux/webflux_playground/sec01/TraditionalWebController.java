@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -21,15 +23,17 @@ public class TraditionalWebController {
 
 
     @GetMapping("/products")
-    public List<Product> getProducts(){
-        List<Product> list = this.restClient
-                .get()
-                .uri("/demo01/products")
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-        log.info("Products: {}", list);
-        return list;
+    public Mono<List<Product>> getProducts() {
+        return Mono.fromCallable(() -> {
+            List<Product> list = this.restClient
+                    .get()
+                    .uri("/demo01/products")
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<List<Product>>() {
+                    });
+            log.info("Products: {}", list);
+            return list;
+        })
+                .subscribeOn(Schedulers.boundedElastic());
     }
-
 }
