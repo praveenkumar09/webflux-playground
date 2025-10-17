@@ -18,7 +18,7 @@ CREATE TABLE product (
 -- MySQL has no native UUID column type; use CHAR(36) (or BINARY(16) if you prefer).
 -- Defaulting to UUID() directly isn’t allowed in column DEFAULT, so we use a trigger below.
 CREATE TABLE `customer_order` (
-                                  `order_id` CHAR(36) NOT NULL PRIMARY KEY,
+                                  `order_id` int AUTO_INCREMENT PRIMARY KEY,
                                   `customer_id` INT NOT NULL,
                                   `product_id` INT NOT NULL,
                                   `amount` INT,
@@ -28,18 +28,6 @@ CREATE TABLE `customer_order` (
                                   CONSTRAINT `fk_customer_order_product`
                                       FOREIGN KEY (`product_id`) REFERENCES `product`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Auto-generate UUIDs if order_id not provided
-DELIMITER //
-CREATE TRIGGER `bi_customer_order_uuid`
-    BEFORE INSERT ON `customer_order`
-    FOR EACH ROW
-BEGIN
-    IF NEW.`order_id` IS NULL OR NEW.`order_id` = '' THEN
-    SET NEW.`order_id` = UUID();
-END IF;
-END//
-DELIMITER ;
 
 INSERT INTO `customer`(`name`, `email`) VALUES
                                             ('sam', 'sam@gmail.com'),
