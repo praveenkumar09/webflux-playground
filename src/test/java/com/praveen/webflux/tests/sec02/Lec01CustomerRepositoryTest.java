@@ -113,4 +113,20 @@ public class Lec01CustomerRepositoryTest extends AbstractTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void _test_updateCustomer(){
+        this.customerRepository.findByName("ethan")
+                .doOnNext(customer -> {
+                    customer.setName("noel");
+                    customer.setEmail("noel@gmail.com");
+                })
+                .flatMap(customer -> this.customerRepository.save(customer))
+                .doOnNext(customer ->
+                        log.info("Customer: {}", customer))
+                .as(StepVerifier::create)
+                .assertNext(customer -> Assertions.assertNotNull(customer.getId()))
+                .verifyComplete();
+
+    }
+
 }
