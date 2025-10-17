@@ -1,4 +1,4 @@
-package com.praveen.webflux.webflux_playground.sec01;
+package com.praveen.webflux.sec01;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
