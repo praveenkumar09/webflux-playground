@@ -126,7 +126,6 @@ public class Lec01CustomerRepositoryTest extends AbstractTest {
                 .as(StepVerifier::create)
                 .assertNext(customer -> Assertions.assertNotNull(customer.getId()))
                 .verifyComplete();
-
     }
 
 }
