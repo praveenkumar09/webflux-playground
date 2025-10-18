@@ -30,13 +30,13 @@ public class Lec04DatabaseClientTest extends AbstractTest {
             INNER JOIN customer_order co ON c.id = co.customer_id
             INNER JOIN product p ON p.id = co.product_id
             WHERE
-                p.description = :description
+                p.description = ?
             ORDER BY co.amount DESC
             """;
 
         this.databaseClient
                 .sql(query)
-                .bind("description", "iphone 20")
+                .bind(0, "iphone 20")
                 .mapProperties(OrderDetails.class)
                 .all()
                 .doOnNext(orderDetail -> log.info("OrderDetail: {}",orderDetail))
