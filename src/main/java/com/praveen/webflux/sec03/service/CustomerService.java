@@ -5,6 +5,7 @@ import com.praveen.webflux.sec03.entity.Customer;
 import com.praveen.webflux.sec03.mapper.EntityDtoMapper;
 import com.praveen.webflux.sec03.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,6 +24,12 @@ public class CustomerService {
 
     public Flux<CustomerDto> getAllCustomers() {
         return this.customerRepository.findAll()
+                .map(EntityDtoMapper::toDto);
+    }
+
+
+    public Flux<CustomerDto> getAllCustomers(Integer pageNo, Integer pageSize) {
+        return this.customerRepository.findBy(PageRequest.of(pageNo, pageSize))
                 .map(EntityDtoMapper::toDto);
     }
 
@@ -49,8 +56,9 @@ public class CustomerService {
                 .map(EntityDtoMapper::toDto);
     }
 
-    public Mono<Void> deleteCustomer(Integer id){
-        return this.customerRepository.deleteById(id);
+    public Mono<Boolean> deleteCustomer(Integer id){
+        return this.customerRepository
+                .deleteCustomerById(id);
     }
 
 
