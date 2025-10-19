@@ -104,7 +104,7 @@ public class CustomerServiceTest {
 
     @Test
     public void test_updateCustomer(){
-        CustomerDto dto = new CustomerDto(null,"ethan_updated","ethan_updated@gmail.com");
+        CustomerDto dto = new CustomerDto(null,"ethan","ethan@gmail.com");
         this.webTestClient
                 .put()
                 .uri("/customers/update/10")
@@ -117,8 +117,8 @@ public class CustomerServiceTest {
                 .as(StepVerifier::create)
                 .assertNext(updatedCustomer -> {
                     assertThat(updatedCustomer.id()).isEqualTo(10);
-                    assertThat(updatedCustomer.name()).isEqualTo("ethan_updated");
-                    assertThat(updatedCustomer.email()).isEqualTo("ethan_updated@gmail.com");
+                    assertThat(updatedCustomer.name()).isEqualTo("ethan");
+                    assertThat(updatedCustomer.email()).isEqualTo("ethan@gmail.com");
                 })
                 .verifyComplete();
     }
@@ -131,6 +131,16 @@ public class CustomerServiceTest {
                 .exchange()
                 .expectStatus()
                 .isOk();
+    }
+
+    @Test
+    public void test_getCustomer_notFound(){
+        this.webTestClient
+                .get()
+                .uri("/customers/11")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 
 }

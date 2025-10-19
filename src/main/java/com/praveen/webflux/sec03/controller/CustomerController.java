@@ -59,13 +59,13 @@ public class CustomerController {
                 .saveCustomer(customerDtoMono);
     }
 
-    @PutMapping(value="/update/{id}")
+    @PutMapping(value="/update/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<ResponseEntity<CustomerDto>> updateCustomer(@PathVariable String id,
-                                            @RequestBody CustomerDto customerDto){
+                                            @RequestBody Mono<CustomerDto> customerDto){
         log.info("Received request to update customer with id: {}", id);
         return this
                 .customerService
-                .updateCustomer(Integer.parseInt(id), Mono.just(customerDto))
+                .updateCustomer(Integer.parseInt(id), customerDto)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
