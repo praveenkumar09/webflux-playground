@@ -8,6 +8,9 @@ public class Customer {
     private String name;
     private String email;
 
+    public Customer() {
+    }
+
     public Customer(Integer id, String name, String email) {
         this.id = id;
         this.name = name;

@@ -14,6 +14,7 @@ import java.util.Objects;
 
 @Service
 public class CustomerService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CustomerService.class);
 
     private final CustomerRepository customerRepository;
 
@@ -29,7 +30,7 @@ public class CustomerService {
 
 
     public Flux<CustomerDto> getAllCustomers(Integer pageNo, Integer pageSize) {
-        return this.customerRepository.findBy(PageRequest.of(pageNo, pageSize))
+        return this.customerRepository.findBy(PageRequest.of(pageNo-1, pageSize))
                 .map(EntityDtoMapper::toDto);
     }
 
@@ -49,10 +50,21 @@ public class CustomerService {
                                             Mono<CustomerDto> customerDtoMono){
         return this.customerRepository
                 .findById(id)
-                .flatMap(entity -> customerDtoMono)
-                .map(EntityDtoMapper::toEntity)
-                .doOnNext(entity -> entity.setId(id))
+                .doOnNext(entity -> log.info("Found entity: {}", entity))
+                .doOnError(error -> log.error("Error finding entity: ", error))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("Customer with id {} not found!", id);
+                    return Mono.empty();
+                }))
+                .flatMap(entity -> customerDtoMono
+                            .map(dto -> {
+                                entity.setEmail(dto.email());
+                                entity.setName(dto.name());
+                                return entity;
+                            })
+                )
                 .flatMap(this.customerRepository::save)
+                .doOnNext(saved -> log.info("Saved entity: {}", saved))
                 .map(EntityDtoMapper::toDto);
     }
 
