@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.awt.*;
-
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
@@ -27,6 +25,18 @@ public class CustomerController {
         return this
                 .customerService
                 .getAllCustomers();
+    }
+
+
+    @GetMapping(value = "/all/paginated",
+            produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<CustomerDto> getAllCustomersByPagination(
+            @RequestParam(defaultValue = "1") Integer pageNo,
+            @RequestParam(defaultValue = "3") Integer pageSize
+    ) {
+        return this
+                .customerService
+                .getAllCustomers(pageNo, pageSize);
     }
 
     @GetMapping(value = "{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
