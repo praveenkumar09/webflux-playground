@@ -2,6 +2,8 @@ package com.praveen.webflux.sec03.controller;
 
 import com.praveen.webflux.sec03.dto.CustomerDto;
 import com.praveen.webflux.sec03.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
+    private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
+
 
     private final CustomerService customerService;
 
@@ -55,12 +59,13 @@ public class CustomerController {
                 .saveCustomer(customerDtoMono);
     }
 
-    @PutMapping(value="/update/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PutMapping(value="/update/{id}")
     public Mono<ResponseEntity<CustomerDto>> updateCustomer(@PathVariable String id,
-                                            @RequestBody Mono<CustomerDto> customerDtoMono){
+                                            @RequestBody CustomerDto customerDto){
+        log.info("Received request to update customer with id: {}", id);
         return this
                 .customerService
-                .updateCustomer(Integer.parseInt(id), customerDtoMono)
+                .updateCustomer(Integer.parseInt(id), Mono.just(customerDto))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
