@@ -3,6 +3,7 @@ package com.praveen.webflux.sec04.validator;
 import com.praveen.webflux.sec04.dto.CustomerDto;
 import com.praveen.webflux.sec04.exceptions.ApplicationException;
 import org.reactivestreams.Publisher;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -12,7 +13,10 @@ import java.util.function.UnaryOperator;
 public class RequestValidator {
 
     private static Predicate<CustomerDto> hasName(){
-        return dto -> Objects.nonNull(dto.name());
+        return dto -> Objects.nonNull(dto.name())
+                && StringUtils.hasText(dto.name())
+                && !dto.name().isEmpty()
+                && !dto.name().isBlank();
     }
 
     private static Predicate<CustomerDto> hasEmail(){
