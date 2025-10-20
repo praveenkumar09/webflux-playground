@@ -47,9 +47,10 @@ public class CustomerController {
 
     @GetMapping(value = "{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CustomerDto> getCustomerById(@PathVariable Integer id) {
-        return this
-                .customerService
-                .getCustomerById(id)
+        return Mono
+                .just(id)
+                .transform(RequestValidator.validateMandatoryFields())
+                .flatMap(this.customerService::getCustomerById)
                 .switchIfEmpty(ApplicationException.customerNotFound(id));
     }
 
@@ -63,17 +64,27 @@ public class CustomerController {
     @PutMapping(value="/update/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CustomerDto> updateCustomer(@PathVariable Integer id,
                                                             @RequestBody Mono<CustomerDto> customerDto){
-        return customerDto
+        return Mono
+                .just(id)
+                .transform(RequestValidator.validateMandatoryFields())
+                .flatMap(ID -> customerDto)
                 .transform(RequestValidator.validate())
-                .as(customer -> this.customerService.updateCustomer(id, customer))
+                .as(customerDtoMono ->
+                        this
+                                .customerService
+                                .updateCustomer(id, customerDtoMono))
                 .switchIfEmpty(ApplicationException.customerNotFound(id));
     }
 
     @DeleteMapping(value="/delete/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<Void> deleteCustomer(@PathVariable Integer id){
-        return this
-                .customerService
-                .deleteCustomer(id)
+        return Mono
+                .just(id)
+                .transform(RequestValidator.validateMandatoryFields())
+                .as(ID ->
+                        this
+                                .customerService
+                                .deleteCustomer(id))
                 .filter(b -> b)
                 .switchIfEmpty(ApplicationException.customerNotFound(id))
                 .then();
