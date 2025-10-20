@@ -1,7 +1,9 @@
 package com.praveen.webflux.sec04.controller;
 
 import com.praveen.webflux.sec04.dto.CustomerDto;
+import com.praveen.webflux.sec04.exceptions.ApplicationException;
 import com.praveen.webflux.sec04.service.CustomerService;
+import com.praveen.webflux.sec04.validator.RequestValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,41 +46,36 @@ public class CustomerController {
     }
 
     @GetMapping(value = "{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<ResponseEntity<CustomerDto>> getCustomerById(@PathVariable String id) {
+    public Mono<CustomerDto> getCustomerById(@PathVariable Integer id) {
         return this
                 .customerService
-                .getCustomerById(Integer.parseInt(id))
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .getCustomerById(id)
+                .switchIfEmpty(ApplicationException.customerNotFound(id));
     }
 
     @PostMapping(value="/save", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CustomerDto> saveCustomer(@RequestBody Mono<CustomerDto> customerDtoMono){
-        return this
-                .customerService
-                .saveCustomer(customerDtoMono);
+        return customerDtoMono
+                .transform(RequestValidator.validate())
+                .as(this.customerService::saveCustomer);
     }
 
     @PutMapping(value="/update/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<ResponseEntity<CustomerDto>> updateCustomer(@PathVariable String id,
+    public Mono<CustomerDto> updateCustomer(@PathVariable Integer id,
                                                             @RequestBody Mono<CustomerDto> customerDto){
-        log.info("Received request to update customer with id: {}", id);
-        return this
-                .customerService
-                .updateCustomer(Integer.parseInt(id), customerDto)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+        return customerDto
+                .transform(RequestValidator.validate())
+                .as(customer -> this.customerService.updateCustomer(id, customer))
+                .switchIfEmpty(ApplicationException.customerNotFound(id));
     }
 
     @DeleteMapping(value="/delete/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<ResponseEntity<Void>> deleteCustomer(@PathVariable String id){
+    public Mono<Void> deleteCustomer(@PathVariable Integer id){
         return this
                 .customerService
-                .deleteCustomer(Integer.parseInt(id))
+                .deleteCustomer(id)
                 .filter(b -> b)
-                .map(b -> ResponseEntity
-                        .ok()
-                        .<Void>build())
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(ApplicationException.customerNotFound(id))
+                .then();
     }
 }
