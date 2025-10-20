@@ -2,6 +2,7 @@ package com.praveen.webflux.sec04.validator;
 
 import com.praveen.webflux.sec04.dto.CustomerDto;
 import com.praveen.webflux.sec04.exceptions.ApplicationException;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -19,6 +20,10 @@ public class RequestValidator {
                 && dto.email().contains("@");
     }
 
+    private static <T> Predicate<T> mandatoryFieldNotNull(){
+        return Objects::nonNull;
+    }
+
     public static UnaryOperator<Mono<CustomerDto>> validate(){
         return mono -> mono
                 .filter(hasName())
@@ -26,4 +31,11 @@ public class RequestValidator {
                 .filter(hasEmail())
                 .switchIfEmpty(ApplicationException.missingEmail());
     }
+
+    public static <T> UnaryOperator<Mono<T>> validateMandatoryFields(){
+        return mono -> mono
+                .filter(mandatoryFieldNotNull())
+                .switchIfEmpty(ApplicationException.missingMandatoryFields());
+    }
+
 }
