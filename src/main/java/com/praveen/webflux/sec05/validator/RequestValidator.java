@@ -11,7 +11,9 @@ import java.util.function.UnaryOperator;
 public class RequestValidator {
 
     private static Predicate<CustomerDto> hasName(){
-        return dto -> Objects.nonNull(dto.name());
+        return dto -> Objects.nonNull(dto.name())
+                && !dto.name().isEmpty()
+                && !dto.name().isBlank();
     }
 
     private static Predicate<CustomerDto> hasEmail(){
