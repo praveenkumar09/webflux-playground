@@ -2,6 +2,7 @@ package com.praveen.webflux.sec05.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,12 @@ public class AuthenticationWebFilter implements WebFilter {
     private static final Logger log = LoggerFactory
             .getLogger(AuthenticationWebFilter.class);
 
+    private final FilterErrorHandler filterErrorHandler;
+
+    @Autowired
+    public AuthenticationWebFilter(FilterErrorHandler filterErrorHandler) {
+        this.filterErrorHandler = filterErrorHandler;
+    }
 
     @Override
     public Mono<Void> filter(
@@ -38,20 +45,12 @@ public class AuthenticationWebFilter implements WebFilter {
             return chain.filter(exchange);
         }else {
             log.info("Authentication failed");
-            String body = "{\"error\": \"Unauthorized\", " +
-                    "\"message\": \"Invalid or missing auth token\"}";
-            ServerHttpResponse response = exchange
-                    .getResponse();
-            response
-                    .setStatusCode(HttpStatus.UNAUTHORIZED);
-            response
-                    .getHeaders()
-                            .setContentType(MediaType.APPLICATION_JSON);
-            DataBuffer dataBuffer = response
-                    .bufferFactory()
-                    .wrap(body.getBytes());
-            return response
-                    .writeWith(Mono.just(dataBuffer));
+            return filterErrorHandler
+                    .handleError(
+                            exchange,
+                            HttpStatus.UNAUTHORIZED,
+                            "Unauthorized",
+                            "Auth token is in-valid");
         }
 
     }

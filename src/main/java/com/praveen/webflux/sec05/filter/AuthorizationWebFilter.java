@@ -1,5 +1,6 @@
 package com.praveen.webflux.sec05.filter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,15 @@ import java.util.function.Predicate;
 @Service
 @Order(2)
 public class AuthorizationWebFilter implements WebFilter {
+
+
+    private final FilterErrorHandler filterErrorHandler;
+
+    @Autowired
+    public AuthorizationWebFilter(FilterErrorHandler filterErrorHandler) {
+        this.filterErrorHandler = filterErrorHandler;
+    }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         Category category = exchange
@@ -37,20 +47,13 @@ public class AuthorizationWebFilter implements WebFilter {
             return chain
                     .filter(exchange);
         }else{
-            String body = "{\"error\": \"Forbidden\", " +
-                    "\"message\": \"Forbidden access\"}";
-            ServerHttpResponse response = exchange
-                    .getResponse();
-            response
-                    .setStatusCode(HttpStatus.FORBIDDEN);
-            response
-                    .getHeaders()
-                            .setContentType(MediaType.APPLICATION_JSON);
-            DataBuffer dataBuffer = response
-                    .bufferFactory()
-                    .wrap(body.getBytes());
-            return response
-                    .writeWith(Mono.just(dataBuffer));
+            return filterErrorHandler
+                    .handleError(
+                            exchange,
+                            HttpStatus.FORBIDDEN,
+                            "Forbidden",
+                            "Only GET requests are allowed"
+                    );
         }
     }
 
