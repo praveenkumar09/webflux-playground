@@ -2,6 +2,7 @@ package com.praveen.webflux.sec05.controller;
 
 import com.praveen.webflux.sec05.dto.CustomerDto;
 import com.praveen.webflux.sec05.exceptions.ApplicationException;
+import com.praveen.webflux.sec05.filter.Category;
 import com.praveen.webflux.sec05.service.CustomerService;
 import com.praveen.webflux.sec05.validator.RequestValidator;
 import org.slf4j.Logger;
@@ -26,7 +27,10 @@ public class CustomerController {
     }
 
     @GetMapping(value = "/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<CustomerDto> getAllCustomers() {
+    public Flux<CustomerDto> getAllCustomers(
+            @RequestAttribute("category")Category category
+    ) {
+        log.info("Received request for category: {}", category);
         return this
                 .customerService
                 .getAllCustomers();
