@@ -30,6 +30,18 @@ public class CustomerRequestHandler {
                         .body(customerDtoFlux, CustomerDto.class));
     }
 
+    public Mono<ServerResponse> allCustomersPaginated(ServerRequest request){
+        Integer pageNo = Integer.valueOf(request.queryParam("pageNo").orElse("1"));
+        Integer pageSize = Integer.valueOf(request.queryParam("pageSize").orElse("10"));
+        return this
+                .customerService
+                .getAllCustomers(pageNo, pageSize)
+                .as(customerDtoFlux ->
+                        ServerResponse
+                        .ok()
+                        .body(customerDtoFlux, CustomerDto.class));
+    }
+
     public Mono<ServerResponse> getCustomer(ServerRequest request){
         Integer id = Integer.valueOf(request.pathVariable("id"));
         return this

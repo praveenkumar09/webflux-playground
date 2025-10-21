@@ -34,6 +34,7 @@ public class RouterConfiguration {
                 .path("/customers", builder ->
                         builder
                                 .GET("/all", customerRequestHandler::allCustomers)
+                                .GET("/all/paginated", customerRequestHandler::allCustomersPaginated)
                                 .GET("/{id}", customerRequestHandler::getCustomer)
                                 .POST("/save", customerRequestHandler::saveCustomer)
                                 .PUT("/update/{id}", customerRequestHandler::updateCustomer)
