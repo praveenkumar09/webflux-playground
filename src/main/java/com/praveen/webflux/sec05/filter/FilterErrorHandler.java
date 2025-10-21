@@ -35,6 +35,10 @@ public class FilterErrorHandler {
         }
         ServerHttpResponse response = exchange
                 .getResponse();
+        response
+                .setStatusCode(status);
+        response.getHeaders()
+                .add("Content-Type", "application/problem+json");
         DataBuffer dataBuffer = response
                 .bufferFactory()
                 .wrap(bytes);
