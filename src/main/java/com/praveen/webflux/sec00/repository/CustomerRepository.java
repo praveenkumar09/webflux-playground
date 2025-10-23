@@ -1,4 +1,4 @@
-package com.praveen.webflux.sec06.repository;
+package com.praveen.webflux.sec00.repository;
 
 import com.praveen.webflux.sec06.entity.Customer;
 import org.springframework.data.domain.Pageable;
