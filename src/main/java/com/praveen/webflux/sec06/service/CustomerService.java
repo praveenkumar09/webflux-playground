@@ -2,7 +2,7 @@ package com.praveen.webflux.sec06.service;
 
 import com.praveen.webflux.sec06.dto.CustomerDto;
 import com.praveen.webflux.sec06.mapper.EntityDtoMapper;
-import com.praveen.webflux.sec00.repository.CustomerRepository;
+import com.praveen.webflux.sec061.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
