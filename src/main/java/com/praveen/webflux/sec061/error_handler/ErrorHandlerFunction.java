@@ -1,4 +1,4 @@
-package com.praveen.webflux.sec00.error_handler;
+package com.praveen.webflux.sec061.error_handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -23,7 +23,7 @@ public class ErrorHandlerFunction {
     public Mono<ServerResponse> handleServerError(Throwable ex, ServerRequest req) {
         return handleException(HttpStatus.INTERNAL_SERVER_ERROR,ex,req, problemDetail -> {
             problemDetail.setType(URI.create("http://example.com/problems/internal-server-error"));
-            problemDetail.setDetail(ex.getMessage());
+            problemDetail.setDetail("Internal server error");
         });
     }
 
