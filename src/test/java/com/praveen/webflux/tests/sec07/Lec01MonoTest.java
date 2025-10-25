@@ -28,7 +28,7 @@ public class Lec01MonoTest extends AbstractWebClient{
         for(int i=0;i<10;i++){
             this.createWebClient()
                     .get()
-                    .uri("/lec01/product/"+i)
+                    .uri("/lec01/product/{id}",i)
                     .retrieve()
                     .bodyToMono(Product.class)
                     .doOnNext(logResponse())
