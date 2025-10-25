@@ -36,8 +36,7 @@ public class ProductController {
     ){
         log.info("Received request to upload products");
         return this.productService
-                .saveProducts(productDtoFlux
-                .doOnNext(productDto -> log.info("Product: {}", productDto)))
+                .saveProducts(productDtoFlux)
                 .then(this.productService
                         .countProducts())
                 .map(count -> new ProductUploadResponse(
