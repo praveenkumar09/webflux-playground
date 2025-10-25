@@ -15,7 +15,8 @@ public class Lec11ExchangeFilterAssignmentTest extends AbstractWebClient {
     private static final Logger log = LoggerFactory
             .getLogger(Lec11ExchangeFilterAssignmentTest.class);
     private final WebClient client = createWebClient(b ->
-            b.filter(this.tokenGenerator()));
+            b.filter(this.tokenGenerator())
+                    .filter(this.logRequest()));
 
 
     @Test
@@ -35,10 +36,6 @@ public class Lec11ExchangeFilterAssignmentTest extends AbstractWebClient {
 
     private ExchangeFilterFunction tokenGenerator() {
         return (request, next) -> {
-            log.info("Request Method: {}",request
-                    .method());
-            log.info("Request URI: {}",request
-                    .url());
             var token= UUID
                     .randomUUID()
                     .toString()
@@ -49,6 +46,16 @@ public class Lec11ExchangeFilterAssignmentTest extends AbstractWebClient {
                             .setBearerAuth(token))
                     .build();
             return next.exchange(modifiedRequest);
+        };
+    }
+
+    private ExchangeFilterFunction logRequest(){
+        return (request, next) -> {
+            log.info("Request Method: {}",request
+                    .method());
+            log.info("Request URI: {}",request
+                    .url());
+            return next.exchange(request);
         };
     }
 }
