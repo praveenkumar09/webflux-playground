@@ -44,6 +44,7 @@ public class Lec11ExchangeFilterAssignmentTest extends AbstractWebClient {
                     .from(request)
                     .headers(h -> h
                             .setBearerAuth(token))
+                    .attribute("eLogging",false)
                     .build();
             return next.exchange(modifiedRequest);
         };
@@ -51,10 +52,13 @@ public class Lec11ExchangeFilterAssignmentTest extends AbstractWebClient {
 
     private ExchangeFilterFunction logRequest(){
         return (request, next) -> {
-            log.info("Request Method: {}",request
-                    .method());
-            log.info("Request URI: {}",request
-                    .url());
+            if(request.attribute("eLogging").isPresent()
+            && (boolean)request.attribute("eLogging").get()){
+                log.info("Request Method: {}",request
+                        .method());
+                log.info("Request URI: {}",request
+                        .url());
+            }
             return next.exchange(request);
         };
     }
