@@ -11,9 +11,24 @@ public class Lec04HeaderTest extends AbstractWebClient{
     @Test
     public void test_getProductById_defaultHeader() throws InterruptedException {
         this.createWebClient(b -> b
-                .defaultHeader("caller-id", "order-service"))
+                .defaultHeader("caller-id",
+                        "order-service"))
                 .get()
                 .uri("/lec04/product/{id}",100)
+                .retrieve()
+                .bodyToMono(Product.class)
+                .doOnNext(logResponse())
+                .then()
+                .as(StepVerifier::create)
+                .verifyComplete();
+    }
+
+    @Test
+    public void test_getProductById_Header() throws InterruptedException {
+        this.createWebClient()
+                .get()
+                .uri("/lec04/product/{id}",100)
+                .header("caller-id","order-service")
                 .retrieve()
                 .bodyToMono(Product.class)
                 .doOnNext(logResponse())
