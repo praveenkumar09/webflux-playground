@@ -22,4 +22,18 @@ public class Lec01MonoTest extends AbstractWebClient{
                 .subscribe();
         Thread.sleep(Duration.ofSeconds(3));
     }
+
+    @Test
+    public void test_getProductById_concurrent() throws InterruptedException {
+        for(int i=0;i<10;i++){
+            this.createWebClient()
+                    .get()
+                    .uri("/lec01/product/"+i)
+                    .retrieve()
+                    .bodyToMono(Product.class)
+                    .doOnNext(logResponse())
+                    .subscribe();
+        }
+        Thread.sleep(Duration.ofSeconds(2));
+    }
 }
