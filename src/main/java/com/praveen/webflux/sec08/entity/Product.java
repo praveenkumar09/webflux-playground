@@ -1,7 +1,6 @@
-package com.praveen.webflux.sec07.entity;
+package com.praveen.webflux.sec08.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
 public class Product {
 

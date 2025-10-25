@@ -1,7 +1,7 @@
-package com.praveen.webflux.sec07.mapper;
+package com.praveen.webflux.sec08.mapper;
 
-import com.praveen.webflux.sec07.dto.ProductDto;
-import com.praveen.webflux.sec07.entity.Product;
+import com.praveen.webflux.sec08.dto.ProductDto;
+import com.praveen.webflux.sec08.entity.Product;
 
 public class ProductDtoMapper {
 
