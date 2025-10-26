@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("products")
 public class ProductController {
 
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
@@ -26,7 +26,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping(value = "upload")
+    @PostMapping
     public Mono<ProductDto> uploadProducts(
             @RequestBody Mono<ProductDto> productDtoMono
     ){
@@ -35,11 +35,14 @@ public class ProductController {
                 .saveProducts(productDtoMono);
     }
 
-    @GetMapping(value = "stream",
+    @GetMapping(value = "/stream/{maxPrice}",
     produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ProductDto> productStream(){
+    public Flux<ProductDto> productStream(
+            @PathVariable Integer maxPrice
+    ){
         return this.productService
-                .productStream();
+                .productStream()
+                .filter(dto -> dto.price() <= maxPrice);
     }
 
 }
