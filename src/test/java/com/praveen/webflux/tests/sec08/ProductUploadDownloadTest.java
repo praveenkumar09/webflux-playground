@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.nio.file.Path;
 import java.time.Duration;
 
 public class ProductUploadDownloadTest {
@@ -24,6 +25,17 @@ public class ProductUploadDownloadTest {
                 .uploadProduct(productFlux)
                 .doOnNext(r -> log.info("Response: {}",r))
                 .then()
+                .as(StepVerifier::create)
+                .verifyComplete();
+    }
+
+    @Test
+    public void test_download(){
+        this
+                .productClient
+                .downloadProduct()
+                .map(ProductDto::toString)
+                .as(flux -> FileWriter.create(flux, Path.of("product.txt")))
                 .as(StepVerifier::create)
                 .verifyComplete();
     }
