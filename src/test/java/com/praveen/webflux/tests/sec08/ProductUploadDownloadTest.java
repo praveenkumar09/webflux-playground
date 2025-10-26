@@ -28,4 +28,14 @@ public class ProductUploadDownloadTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void test_download(){
+        this
+                .productClient
+                .downloadProduct()
+                .as(StepVerifier::create)
+                .expectNextCount(1_000_010)
+                .verifyComplete();
+    }
+
 }

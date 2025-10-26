@@ -6,6 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
 
 public class ProductClient {
 
@@ -22,6 +25,14 @@ public class ProductClient {
                 .body(product, ProductDto.class)
                 .retrieve()
                 .bodyToMono(ProductUploadResponse.class);
+    }
+
+    public Flux<ProductDto> downloadProduct(){
+        return this.webClient
+                .get()
+                .uri("/all")
+                .retrieve()
+                .bodyToFlux(ProductDto.class);
     }
 
 }
