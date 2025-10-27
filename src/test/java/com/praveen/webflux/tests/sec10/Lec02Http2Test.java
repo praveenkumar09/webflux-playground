@@ -7,23 +7,22 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
-
-public class Lec01HttpConnectionPollingTest extends AbstractWebClient {
+public class Lec02Http2Test extends AbstractWebClient {
 
     private final WebClient webClient = createWebClient(b -> {
-        var poolSize = 20000;
+        var poolSize = 1;
         var provider = ConnectionProvider.builder("webclient-pool")
                 .lifo()
                 .maxConnections(poolSize)
-                .pendingAcquireMaxCount(poolSize * 5)
                 .build();
         var httpclient = HttpClient
                 .create(provider)
+                .protocol(HttpProtocol.H2C)
                 .keepAlive(true)
                 .compress(true);
         b.clientConnector(new ReactorClientHttpConnector(httpclient));
